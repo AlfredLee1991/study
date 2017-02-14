@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.framework.dao.demo.IVisitorDao">
+    
+    <select id="queryVisitorByState" parameterType="int" resultType="com.framework.dao.model.demo.Visitor">
+        select * from visitor where status=#{state}
+    </select>
+    
+    <insert id="insertVisitor" parameterType="com.framework.dao.model.demo.Visitor">
+        insert into visitor(name,email,status,createTime) values(#{name},#{email},#{status},#{createTime})
+    </insert>
+
+</mapper>

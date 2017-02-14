@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="keywords" content="jquery,ui,easy,easyui,web">
+<meta name="description"
+	content="easyui help you build your web page easily!">
+<title>jQuery EasyUI CRUD Demo</title>
+<link rel="stylesheet" type="text/css"
+	href="http://www.jeasyui.net/Public/js/easyui/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css"
+	href="http://www.jeasyui.net/Public/js/easyui/themes/icon.css">
+<link rel="stylesheet" type="text/css"
+	href="http://www.jeasyui.net/Public/js/easyui/demo/demo.css">
+<style type="text/css">
+#fm {
+	margin: 0;
+	padding: 10px 30px;
+}
+
+.ftitle {
+	font-size: 14px;
+	font-weight: bold;
+	color: #666;
+	padding: 5px 0;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #ccc;
+}
+
+.fitem {
+	margin-bottom: 5px;
+}
+
+.fitem label {
+	display: inline-block;
+	width: 80px;
+}
+</style>
+<script type="text/javascript" src="./js/jquery-1.6.min.js"></script>
+<script type="text/javascript" src="./js/jquery.easyui.min.js"></script>
+<script type="text/javascript">
+	var url;
+	function newUser() {
+		$('#dlg').dialog('open').dialog('setTitle', 'New User');
+		$('#fm').form('clear');
+		url = 'addUser';
+	}
+	function editUser() {
+		var row = $('#dg').datagrid('getSelected');
+		if (row) {
+			$('#dlg').dialog('open').dialog('setTitle', 'Edit User');
+			$('#fm').form('load', row);
+			url = 'updateUser?id=' + row.id;
+		}
+	}
+	function saveUser() {
+		$('#fm').form('submit', {
+			url : url,
+			onSubmit : function() {
+				return $(this).form('validate');
+			},
+			success : function(result) {
+				var result = eval('(' + result + ')');
+				if (result.success) {
+					$('#dlg').dialog('close'); // close the dialog
+					$('#dg').datagrid('reload'); // reload the user data
+				} else {
+					$.messager.show({
+						title : 'Error',
+						msg : result.msg
+					});
+				}
+			}
+		});
+	}
+	function removeUser() {
+		var row = $('#dg').datagrid('getSelected');
+		if (row) {
+			$.messager.confirm('Confirm',
+					'Are you sure you want to remove this user?', function(r) {
+						if (r) {
+							$.post('removeUser', {
+								id : row.id
+							}, function(result) {
+								if (result.success) {
+									$('#dg').datagrid('reload'); // reload the user data
+								} else {
+									$.messager.show({ // show error message
+										title : 'Error',
+										msg : result.msg
+									});
+								}
+							}, 'json');
+						}
+					});
+		}
+	}
+</script>
+</head>
+<body>
+	<h2>Basic CRUD Application</h2>
+	<div class="demo-info" style="margin-bottom: 10px">
+		<div class="demo-tip icon-tip">&nbsp;</div>
+		<div>Click the buttons on datagrid toolbar to do crud actions.</div>
+	</div>
+
+	<table id="dg" style="width: 700px; height: 300px"></table>
+	<script>
+		$('#dg').datagrid({
+			url : 'listUser',
+			columns : [ [ {
+				field : 'id',
+				hidden : true
+			}, {
+				field : 'firstname',
+				title : 'First Name',
+				width : 50,
+				sortable : true
+			}, {
+				field : 'lastname',
+				title : 'Last Name',
+				width : 50,
+				sortable : true
+			}, {
+				field : 'phone',
+				title : 'Phone',
+				width : 50
+			}, {
+				field : 'email',
+				title : 'Email',
+				width : 50
+			} ] ],
+			toolbar : [ {
+				iconCls : 'icon-add',
+				text : "New User",
+				handler : function() {
+					newUser()
+				},
+				plain : "true",
+
+			}, '-', {
+				iconCls : 'icon-edit',
+				text : "Edit User",
+				handler : function() {
+					editUser()
+				},
+				plain : "true"
+			}, '-', {
+				iconCls : 'icon-remove',
+				text : "Remove User",
+				handler : function() {
+					removeUser()
+				},
+				plain : "true"
+			} ],
+			//设置为 true，则只允许选中一行。
+			singleSelect : true,
+			//设置为 true，则显示带有行号的列。
+			rownumbers : true,
+			//设置为 true，则会自动扩大或缩小列的尺寸以适应网格的宽度并且防止水平滚动。
+			fitColumns : true,
+			//定义分页栏的位置。可用的值有：'top'、'bottom'、'both'。
+			pagePosition : "both",
+			//设置为 true，则在数据网格（datagrid）底部显示分页工具栏
+			pagination : true,
+			//当设置了 pagination 属性时，初始化页码。
+			pageNumber : 1,
+			//当设置了 pagination 属性时，初始化页面尺寸。
+			pageSize : 10,
+			//当从远程站点加载数据时，显示的提示消息
+			loadMsg : "please waitting...",
+			//当设置了 pagination 属性时，初始化页面尺寸的选择列表。
+			pageList : [ 10, 12, 20, 30 ],
+			//行点击事件
+			onClickRow : function(index, data) {
+				var row = $('#dg').datagrid('getSelected');
+// 				alert("行点击事件firstname:" + row.firstname);
+			},
+			//行选中事件
+			onSelect : function(index, data) {
+				var row = $('#dg').datagrid('getSelected');
+// 				alert("行选中事件lastname:" + row.lastname);
+			}
+		});
+	</script>
+	
+	<div id="dlg" class="easyui-dialog"
+		style="width: 400px; height: 280px; padding: 10px 20px" closed="true"
+		buttons="#dlg-buttons">
+		<div class="ftitle">User Information</div>
+		<form id="fm" method="post" novalidate>
+			<div class="fitem">
+				<label>First Name:</label> <input name="firstname"
+					class="easyui-validatebox" required="true">
+			</div>
+			<div class="fitem">
+				<label>Last Name:</label> <input name="lastname"
+					class="easyui-validatebox" required="true">
+			</div>
+			<div class="fitem">
+				<label>Phone:</label> <input name="phone">
+			</div>
+			<div class="fitem">
+				<label>Email:</label> <input name="email" class="easyui-validatebox"
+					validType="email">
+			</div>
+		</form>
+	</div>
+	<div id="dlg-buttons">
+		<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="saveUser()">Save</a>
+		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')">Cancel</a>
+	</div>
+</body>
+</html>
