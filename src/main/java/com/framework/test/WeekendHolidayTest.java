@@ -1,4 +1,4 @@
-package com.framework.utils;
+package com.framework.test;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

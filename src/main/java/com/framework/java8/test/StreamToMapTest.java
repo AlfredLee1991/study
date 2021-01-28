@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Test4{
+public class StreamToMapTest{
 
     public static void main(String[] args) {
         List<UserBo> list = new ArrayList<>();
